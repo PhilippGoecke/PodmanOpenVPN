@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+CONTAINER_NAME="openvpn-as"
+IMAGE="docker.io/openvpn/openvpn-as:latest"
+DATA_DIR="$(pwd)/openvpn-as-config"
+
+# Create persistent data directory
+mkdir -p "${DATA_DIR}"
+
+# Remove existing container if present
+if podman container exists "${CONTAINER_NAME}"; then
+    echo "Removing existing container ${CONTAINER_NAME}..."
+    podman rm -f "${CONTAINER_NAME}"
+fi
+
+echo "Starting OpenVPN Access Server..."
+podman run -d \
+    --name "${CONTAINER_NAME}" \
+    --cap-add=NET_ADMIN \
+    --cap-add=MKNOD \
+    --device /dev/net/tun \
+    -p 943:943/tcp \
+    -p 443:443/tcp \
+    -p 1194:1194/udp \
+    -v "${DATA_DIR}:/openvpn:Z" \
+    --restart unless-stopped \
+    "${IMAGE}"
+
+echo "OpenVPN Access Server started."
+echo "Admin UI:  https://localhost:943/admin"
+echo "Client UI: https://localhost:943/"
+echo "Get initial admin password with:"
+echo "  podman logs ${CONTAINER_NAME} 2>&1 | grep -i 'password'"
