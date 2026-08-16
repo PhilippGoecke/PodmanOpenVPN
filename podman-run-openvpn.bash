@@ -20,8 +20,8 @@ podman run -d \
     --cap-add=NET_ADMIN \
     --cap-add=MKNOD \
     --device /dev/net/tun \
-    -p 943:943/tcp \
-    -p 443:443/tcp \
+    -p 9443:943/tcp \
+    -p 8443:443/tcp \
     -p 1194:1194/udp \
     -v "${DATA_DIR}:/openvpn:Z" \
     --restart unless-stopped \
