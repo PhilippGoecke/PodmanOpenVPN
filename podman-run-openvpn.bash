@@ -30,8 +30,14 @@ podman run -d \
 echo "OpenVPN Access Server started."
 echo "Admin UI:  https://localhost:943/admin"
 echo "Client UI: https://localhost:943/"
-echo "Get initial admin password with:"
-echo "  podman logs ${CONTAINER_NAME} 2>&1 | grep -i 'password'"
+echo "Get initial openvpn admin password with:"
+echo "  podman exec -it ${CONTAINER_NAME} cat /usr/local/openvpn_as/init.log | grep password"
+podman exec -it ${CONTAINER_NAME} cat /usr/local/openvpn_as/init.log | grep password
+
+echo ""
+echo "Reset user password via CLI:"
+echo "  podman exec -it ${CONTAINER_NAME} sacli --user <username> --new_pass 'YourNewPasswordHere' SetLocalPassword
+echo "  podman exec -it ${CONTAINER_NAME} sacli start
 
 echo ""
 echo "To create a client user:"
